@@ -19,3 +19,6 @@ NodeJS Version: 6.3.1
 CoffeeScript is just JavaScript, but in Python/Ruby-like syntax. It removes many extra characters, enables more rapid typing of the code, and is simply more aesthetically pleasing to look at than regular JavaScript.
 
 Nonetheless, CS still goes hand in hand with JS, and one cannot properly code in CS without first understanding to code in JS.
+
+# Documentation
+You will find more documentation in the /docs folder
