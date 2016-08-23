@@ -17,7 +17,7 @@
     "coffeeify": "^2.0.1",
     "minifier": "^0.8.0"
   },
-  "script": {
+  "scripts": {
     "app": "coffee server.coffee"
   }
 }
