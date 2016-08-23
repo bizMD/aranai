@@ -1,0 +1,25 @@
+{
+  "name": "aranai",
+  "version": "1.0.0",
+  "description": "Test package for web crawler",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Rene Calunsag",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "google": "^2.1.0",
+    "marko": "^3.9.4",
+    "oboe": "^2.1.2",
+    "restify": "^4.1.1",
+    "socket.io": "^1.4.8",
+    "sugar": "^2.0.1",
+    "x-ray": "^2.3.0"
+  },
+  "devDependencies": {
+    "coffeeify": "^2.0.1",
+    "minifier": "^0.8.0"
+  }
+}

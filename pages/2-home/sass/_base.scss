@@ -1,0 +1,26 @@
+body {
+	@include position(relative, 0 0 0 0);
+	@include size(100% 100%);
+	@include background-image(url("https://wallpaperscraft.com/image/line_light_wavy_neon_47545_1280x800.jpg"));
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.pageBody {
+	@include outer-container;
+
+	.full-width {
+		@include span-columns(12);
+	}
+
+	.top-margin {
+		@include margin(0.75em null null null);
+	}
+
+	.hidden {
+		display: none;
+	}
+}
