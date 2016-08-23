@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>server.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>server.coffee</h1>
+        
+
+        
+      </div>
+
+      
+        
+        <h2 id="require-the-dependencies">Require the dependencies</h2>
+<p>These are either out of the box dependencies, or helpful NPM packages</p>
+
+        
+          <div class='highlight'><pre>
+fs = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs'</span>
+path = <span class="hljs-built_in">require</span> <span class="hljs-string">'path'</span>
+domain = <span class="hljs-built_in">require</span> <span class="hljs-string">'domain'</span>
+google = <span class="hljs-built_in">require</span> <span class="hljs-string">'google'</span>
+restify = <span class="hljs-built_in">require</span> <span class="hljs-string">'restify'</span></pre></div>
+        
+      
+        
+        <h2 id="require-the-marko-adapter">Require the marko adapter</h2>
+<p>This dependency allows for the use of MarkoJS to require marko files</p>
+
+        
+          <div class='highlight'><pre>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">'marko/node-require'</span>).install();</pre></div>
+        
+      
+        
+        <h2 id="activate-the-domain">Activate the domain</h2>
+<p>A domain is used to catch any asynchronous errors that show up in our code</p>
+
+        
+          <div class='highlight'><pre>
+d = domain.create()
+d.run -&gt;</pre></div>
+        
+      
+        
+        <h2 id="create-the-web-server-and-use-middleware">Create the web server and use middleware</h2>
+<p>The following sets up the web server using Restify’s out of the box middleware.
+This makes it easy for us to grab and serve info to any client.</p>
+
+        
+          <div class='highlight'><pre>	
+	server = restify.createServer <span class="hljs-attribute">name</span>: <span class="hljs-string">'Aranai'</span>
+	server.use restify.gzipResponse()
+	server.use restify.bodyParser()
+	server.use restify.queryParser()
+	server.pre restify.pre.sanitizePath()
+	server.use restify.CORS()
+	server.use restify.fullResponse()</pre></div>
+        
+      
+        
+        <h2 id="serve-routes">Serve routes</h2>
+<p>There are four routes in use:</p>
+<ul>
+<li>The home page, serving the HTML</li>
+</ul>
+
+        
+          <div class='highlight'><pre>
+	server.get <span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-params">(req, res, next)</span> -&gt;</span>
+		res.writeHead <span class="hljs-number">200</span>, {<span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'text/html; charset=utf-8'</span>}
+		template = path.resolve <span class="hljs-string">'pages'</span>, <span class="hljs-string">'2-home'</span>, <span class="hljs-string">'marko'</span>, <span class="hljs-string">'template.marko'</span>
+		view = <span class="hljs-built_in">require</span> template
+		view.render {}, res</pre></div>
+        
+      
+        
+        <ul>
+<li>The CSS styles for the home page</li>
+</ul>
+
+        
+          <div class='highlight'><pre>	
+	server.get <span class="hljs-string">'/home/css'</span>, <span class="hljs-function"><span class="hljs-params">(req, res, next)</span> -&gt;</span>
+		res.writeHead <span class="hljs-number">200</span>, {<span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'text/css'</span>}
+		template = path.resolve <span class="hljs-string">'pages'</span>, <span class="hljs-string">'2-home'</span>, <span class="hljs-string">'sass'</span>, <span class="hljs-string">'styles.min.css'</span>
+		file = fs.createReadStream template
+		file.pipe res</pre></div>
+        
+      
+        
+        <ul>
+<li>The JS file for the home page</li>
+</ul>
+
+        
+          <div class='highlight'><pre>	
+	server.get <span class="hljs-string">'/home/js'</span>, <span class="hljs-function"><span class="hljs-params">(req, res, next)</span> -&gt;</span>
+		res.writeHead <span class="hljs-number">200</span>, {<span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/javascript'</span>}
+		template = path.resolve <span class="hljs-string">'pages'</span>, <span class="hljs-string">'2-home'</span>, <span class="hljs-string">'coffee'</span>, <span class="hljs-string">'index.min.js'</span>
+		file = fs.createReadStream template
+		file.pipe res</pre></div>
+        
+      
+        
+        <ul>
+<li>The request path, which takes in a request from the homepage, crawls Google, then returns the result</li>
+</ul>
+
+        
+          <div class='highlight'><pre>
+	server.get <span class="hljs-string">'/request'</span>, <span class="hljs-function"><span class="hljs-params">(req, res, next)</span> -&gt;</span>
+		res.writeHead <span class="hljs-number">200</span>, {<span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/json'</span>}
+		crawl = req.params.crawl
+		google.resultsPerPage = <span class="hljs-number">20</span>
+
+		google crawl, <span class="hljs-function"><span class="hljs-params">(err, resp)</span> -&gt;</span>
+			<span class="hljs-keyword">if</span> err
+				res.write <span class="hljs-string">"{error:true}"</span>
+				res.end()
+				next()
+			<span class="hljs-keyword">else</span>
+				obj = []
+				obj.push {<span class="hljs-attribute">title</span>:title, <span class="hljs-attribute">link</span>:link} <span class="hljs-keyword">for</span> {title, link} <span class="hljs-keyword">in</span> resp.links <span class="hljs-keyword">when</span> title <span class="hljs-keyword">isnt</span> <span class="hljs-string">''</span> <span class="hljs-keyword">and</span> !!link <span class="hljs-keyword">is</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">and</span> obj.length &lt; <span class="hljs-number">10</span>
+				res.write JSON.stringify obj
+				res.end()
+				next()</pre></div>
+        
+      
+        
+        <p>After each operation, log if there was an error</p>
+
+        
+          <div class='highlight'><pre>	server.<span class="hljs-literal">on</span> <span class="hljs-string">'after'</span>, <span class="hljs-function"><span class="hljs-params">(req, res, route, error)</span> -&gt;</span>
+		<span class="hljs-built_in">console</span>.log <span class="hljs-string">"======= After call ======="</span>
+		<span class="hljs-built_in">console</span>.log <span class="hljs-string">"Error: <span class="hljs-subst">#{error}</span>"</span>
+		<span class="hljs-built_in">console</span>.log <span class="hljs-string">"=========================="</span></pre></div>
+        
+      
+        
+        <p>Log when the web server starts up</p>
+
+        
+          <div class='highlight'><pre>	server.listen <span class="hljs-number">7000</span>, <span class="hljs-function">-&gt;</span> <span class="hljs-built_in">console</span>.log <span class="hljs-string">"<span class="hljs-subst">#{server.name}</span>[<span class="hljs-subst">#{process.pid}</span>] online: <span class="hljs-subst">#{server.url}</span>"</span>
+	<span class="hljs-built_in">console</span>.log <span class="hljs-string">"<span class="hljs-subst">#{server.name}</span> is starting..."</span></pre></div>
+        
+      
+        
+        <p>Catch the error in the domain</p>
+
+        
+          <div class='highlight'><pre>d.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-params">(error)</span> -&gt;</span>
+	<span class="hljs-built_in">console</span>.warn error</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

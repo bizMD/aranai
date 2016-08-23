@@ -14,3 +14,8 @@ NodeJS Version: 6.3.1
 6. Install all NPM dependencies via the command: *npm install*
 7. *Important!* Install CoffeeScript using: npm install -g coffee-script
 8. Run the app with: *npm run app*
+
+# Why CoffeeScript?
+CoffeeScript is just JavaScript, but in Python/Ruby-like syntax. It removes many extra characters, enables more rapid typing of the code, and is simply more aesthetically pleasing to look at than regular JavaScript.
+
+Nonetheless, CS still goes hand in hand with JS, and one cannot properly code in CS without first understanding to code in JS.
